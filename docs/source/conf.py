@@ -24,6 +24,8 @@ author = 'Filippo Marini'
 # The full version, including alpha/beta/rc tags
 release = '1.0'
 
+# The master toctree document.
+master_doc = 'index'
 
 # -- General configuration ---------------------------------------------------
 
