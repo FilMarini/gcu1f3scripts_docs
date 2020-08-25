@@ -12,9 +12,12 @@ Some acquisition script may change over time due to GCU/BEC firmware updates or 
 quick_start.py
 **************
 
-This is the main script. It allows the user to create all the necessary acquisition files based on the setup available.
+This is the main script. It allows the user to configure the following DAQ parameters:
 
-In principle, all the functionalities and trigger schemes should be implemented in this script.
+1. Threshold; The threshold can be set to a fixed ADC value (which will be the same for every channel) or the user can define a certain number of standard deviation from the baseline (evaluated for each channel).
+2. pre-trigger and trigger window; a fixed value (number of nanoseconds / 8) which will be the same for each channel
+3. Output file type; the user can decide whether to save or not the waveforms, which type (binary or txt) and the folder path.
+4. Trigger type; the user can set the trigger in global mode (and decide which GCU to trigger) or in auto-trigger mode.
 
 The script may be run in the assisted *user guide mode*, or in *flag mode* providing all the different options. To run the script in *user guide mode* provide the script with the *-g* option.
 
@@ -23,18 +26,22 @@ All the questions that the script will ask on screen and the related flag in *fl
 * **How many GCUs are connected?**: Number of GCU in your setup
 
   flag: *-s*
+
+* **Do you want a fixed value for threshold? (y/n, n set the threshold based on the std deviation)**: Choose between a fixed value or number of std deviation
+
+  flag: *--t_type*
   
 * **Insert threshold**: Threshold value which will be the same for every channel of every GCU
 
-  flag: *-t*
+  flag: *-t*, options: *'threhsold value'*
   
 * **Insert pre-trigger**: Pre-trigger value which will be the same for every channel of every GCU
 
-  flag: *-p*
+  flag: *-p*, options: *'pre-trigger value'*
   
 * **Insert trigger window**: Trigger window value which will be the same for every channel of every GCU
 
-  flag: *-w*
+  flag: *-w*, options: *'trigger window value'*
   
 * **Do you want to store the acquisition data? (y/n)**: if you wish to save the acquired data during the session select *y*, otherwise the data will go to */dev/null*
 
@@ -65,17 +72,23 @@ All the questions that the script will ask on screen and the related flag in *fl
       flag: *--set_auto_which*, options: *'gcu numbers'*
 
 Example: If you wish to run a global trigger acquisition with GCU 1 and 10 firing to the BEC in a setup with 13 GCUs and save the data in binary files:
-*python quick_start.py -s13 -t9000 -p45 -w30 --store -b --path /home/jdaq/data --global --set_auto --set_auto_which 1,10*
+*python quick_start.py -s13 --t_type -t9000 -p45 -w30 --store -b --path /home/jdaq/data --global --set_auto --set_auto_which 1,10*
+
+Example: If you wish to run a auto trigger acquisition with 3 std deviation threshold in a setup with 13 GCUs and save the data in binary files:
+*python quick_start.py -s13 -t3 -p45 -w30 --store -b --path /home/jdaq/data*
 
 Once run, the script will produce a *Makefile*. Just type 'make' and press *Enter*. All the necessary files should have been created. (If a precedent Makefile has been run, before running the new Makefile type 'make clean').
 
+"Make" Generated Files
+######################
+
 master_script.sh
-################
+----------------
 
 Once the 'run' command has been issued, a *master_script.sh* shall appear in the *gcu_v2_scripts* folder. This scripts will calibrate the synchronous link as well as setting the threshold, pre-trigger and trigger window values for all the GCUs in the setup.
 
 master_readout.sh
-#################
+-----------------
 
 If you decided to store the acquisition data, in the 'gcu_acq_scripts' folder a 'master_script.sh' appears. Run this shell script to acquire from the setup.
 
@@ -105,8 +118,10 @@ These scripts has been created fr debug purposes. They are not useful unless the
 
 * setup_bec_start_stop.py
 
-BEC_go_ext.py
-#############
+Set the BEC external trigger
+############################
+
+**BEC_go_ext.py**
 
 This script manages the trigger source of the BEC (i.e., whether the trigger source is from the GCUs or from the external trigger channel)
 
@@ -121,8 +136,10 @@ Usage example: *python BEC_go_ext.py -e1* to enable the external trigger validat
 
 Script NOT included in the quick start procedure
 
-BEC_set_trigger.py
-##################
+Set the trigger multiplicity and GCU mask
+#########################################
+
+**BEC_set_trigger.py**
 
 This trigger enables the multiplicity for global trigger validation.
 
@@ -136,8 +153,10 @@ Usage example: *python BEC_set_trigger.py -g 6651 -m 2* when the GCU connected t
 
 Script NOT included in the quick start procedure
 
-setup_BEC.py
-############
+Synchronous link calibration
+############################
+
+**setup_BEC.py**
 
 To calibrate the synchronous link of the whole system as well as lauch the synchronization procedure.
 
@@ -178,8 +197,10 @@ Debug scripts
 
 * *cache_monitor.py*: Needed to check the status of the l1 cache in all the GCUs in the system
 
-gui_control
-###########
+DAQ Parameters with the GUI
+###########################
+
+**gui_control/gui_control.py**
 
 Folder containing the *gui_control.py* script used to set the DAQ parameters for a single gcu and channel.
 
@@ -189,13 +210,17 @@ Script flags:
 
 Usage example: *python gui_control.py -s10* to control the DAQ parameters of GCU # 10.
 
-ini_files
-#########
+INI Configuration files folder
+##############################
+
+**ini_files**
 
 Collection of the ini files for all the GCUs in the setup. I suggest to let the quick start procedure generate them
 
-gcu_readout
-###########
+Readout script
+##############
+
+**gcu_readout.py**
 
 Main acquisition script. Start the acquisition for a single GCU and Channel.
 
@@ -224,8 +249,10 @@ Script Flags:
 
 Usage example: *python gcu_readout.py -c ini_files/gcu_10_ch1.ini -t True -p True -s1 -b True* when acquiring from GCU #10, channel #1 plotting the waveform online
 
-general_soft_reset.py
-#####################
+Reset script
+############
+
+**general_soft_reset.py**
 
 This script needs to run first when GCUs are rebooted. If not, some GCUs may not have the l1 cache synchronized, having the acquired data not time correlated (showing pretty much just noise during acquisition)
 
@@ -234,8 +261,10 @@ Script flags:
 
 Usage example: *python general_soft_reset.py -s13* for a setup with 13 GCUs
 
-setup_channels.sh
-#################
+Configure the whole GCU setup
+#############################
+
+**setup_channels.sh**
 
 Shell script that set ups all the gcus and channels with the ini files DAQ parameters (thresholds, trigger windows, etc.) as well as the trigger condition (global trigger, auto trigger)
 
@@ -243,8 +272,10 @@ This script is generated by the quick start procedure
 
 The shell scripts uses the following scripts:
 
-setup_channel.py
-****************
+Configure a single channel
+**************************
+
+**setup_channel.py**
 
 Takes the ini file and sets the corresponding DAQ parameters
 
@@ -254,8 +285,10 @@ Script Flags:
 
 Usage example: *python setup_channel.py -c ini_files/gcu_6_ch1.ini* to configure GCU # 6, channel # 1
 
-setup_trg.py
-************
+Set the trigger
+***************
+
+**setup_trg.py**
 
 Sets the trigger condition
 
@@ -269,8 +302,10 @@ Script flags:
 
 Usage example: *python setup_trg.py -b -s 2* to set GCU # 2  in global trigger 
 
-master_readout.sh
-#################
+Start a global acquisition
+##########################
+
+**master_readout.sh**
 
 Generated by the quick start procedure only if the user said he wanted to store the data, starts an acquisition session.
 
