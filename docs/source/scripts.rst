@@ -8,7 +8,7 @@ All the files needed are provided in the repository. the path is *gcu1f3/gcu_v2_
 
 Some acquisition script may change over time due to GCU/BEC firmware updates or to provide new features. If you find any discrepancy, feel free to ask.
 
-**!!! TO READ: the double dashed line ("- -" without the space) is rendered as a single line ("--"). Keep that in mind when reading the python scripts options. In general if the option is a single letter, a single line is used ("-a"), if the options are multiple letters, double lines are used ("--abc")
+**!!! TO READ: the double dashed line ("- -" without the space) is rendered as a single line ("--"). Keep that in mind when reading the python scripts options. In general if the option is a single letter, a single line is used ("-a"), if the options are multiple letters, double lines are used ("--abc")**
 
 **************
 quick_start.py
