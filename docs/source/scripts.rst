@@ -10,6 +10,8 @@ Some acquisition script may change over time due to GCU/BEC firmware updates or 
 
 **!!! TO READ: the double dashed line ("- -" without the space) is rendered as a single line ("--"). Keep that in mind when reading the python scripts options. In general if the option is a single letter, a single line is used ("-a"), if the options are multiple letters, double lines are used ("--abc")**
 
+**!!! Make sure you have the uHal environment ready to run the IpBus scripts. To get the environment ready run the alias "uhal2"**
+
 **************
 quick_start.py
 **************
