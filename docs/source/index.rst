@@ -18,3 +18,9 @@ Welcome to GCU DAQ's documentation!
    :caption: Typical Procedures:
 
    typical_procedures
+
+.. toctree::
+   :maxdepth: 2
+   :caption: DDR3 Data Structure:
+
+   ddr3_data
